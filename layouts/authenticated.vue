@@ -1,0 +1,119 @@
+
+<template>
+  <a-layout id="auth-view">
+    <a-layout-sider v-model="collapsed" :trigger="null" collapsible>
+      <div class="logo" />
+      <a-menu theme="dark" mode="inline" :default-selected-keys="['1']">
+        <a-menu-item key="1">
+          <a-icon type="user" />
+          <span>サブジェクト</span>
+        </a-menu-item>
+        <a-menu-item key="2">
+          <a-icon type="video-camera" />
+          <span>グループ</span>
+        </a-menu-item>
+        <a-menu-item key="3">
+          <a-icon type="upload" />
+          <span>アカウント情報</span>
+        </a-menu-item>
+        <a-menu-item key="4" @click="logoutLogic">
+          <a-icon type="user" />
+          <span>ログアウト</span>
+        </a-menu-item>
+      </a-menu>
+    </a-layout-sider>
+    <a-layout>
+      <a-layout-header style="background: #fff; padding: 0">
+        <a-icon
+          class="trigger"
+          :type="collapsed ? 'menu-unfold' : 'menu-fold'"
+          @click="() => (collapsed = !collapsed)"
+        />
+      </a-layout-header>
+
+      <a-layout-content
+        v-if="$cookies.get('teacherAccessToken')"
+        :style="{
+          margin: '24px 16px',
+          padding: '24px',
+          background: '#fff',
+          minHeight: '280px',
+        }"
+      >
+        <Nuxt />
+      </a-layout-content>
+    </a-layout>
+  </a-layout>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      collapsed: false,
+    };
+  },
+  beforeCreate() {
+    if (!this.$cookies.get("teacherAccessToken")) {
+      this.$router.push("/auth/login");
+      this.$message.info("ログインが必要です");
+    }
+  },
+  methods: {
+    logoutLogic() {
+      this.$cookies.set("teacherAccessToken", null);
+      this.$router.push("/auth/login");
+    },
+  },
+};
+</script>
+
+<style>
+#auth-view {
+  height: 100vh;
+}
+#auth-view .logo {
+  height: 32px;
+  margin: 16px;
+}
+#auth-view .trigger {
+  font-size: 18px;
+  line-height: 64px;
+  padding: 0 24px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+#auth-view .trigger:hover {
+  color: #1890ff;
+}
+
+html {
+  font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  word-spacing: 1px;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+  height: 100vh;
+}
+
+body {
+  background-color: #f0f2f5;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+</style>
+
+
+
+
+
