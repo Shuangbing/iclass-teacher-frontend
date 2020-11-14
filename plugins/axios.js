@@ -12,7 +12,8 @@ export default ({ $axios, $cookies }) => {
 
 
   $axios.onError(error => {
-    const { data } = error.response
+    const { data, status } = error.response
+    if (status == 401) location.href = '/auth/login'
     message.info(data.message);
   })
 }
