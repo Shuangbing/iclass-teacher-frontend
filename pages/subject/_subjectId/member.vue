@@ -82,6 +82,9 @@ export default {
       await this.refreshWaittingMember();
     }, 5000);
   },
+  beforeDestroy() {
+    clearInterval(this.waittingInterval);
+  },
   methods: {
     async refreshWaittingMember() {
       const members = await this.$nuxt.$axios
@@ -101,7 +104,7 @@ export default {
       await this.$nuxt.$axios
         .post(`/subject/${this.subjectId}/group`, { amount: this.amount })
         .then(async (result) => {
-          console.log(result)
+          console.log(result);
           this.$nuxt.$router.push(`/subject/${this.subjectId}/group`);
         });
     },
