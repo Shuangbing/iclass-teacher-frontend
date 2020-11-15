@@ -35,7 +35,9 @@
       <span slot="action" slot-scope="text, record">
         <a @click="generateShareLink(record)">招待リンク</a>
         <a-divider type="vertical" />
-        <a @click="generateShareLink(record)">グループ</a>
+        <a @click="$nuxt.$router.push(`/subject/${record.code}/member`)"
+          >グループ</a
+        >
         <a-divider type="vertical" />
         <a>削除</a>
       </span>

@@ -33,12 +33,7 @@
 
       <a-layout-content
         v-if="$cookies.get('teacherAccessToken')"
-        :style="{
-          margin: '24px 16px',
-          padding: '24px',
-          background: '#fff',
-          minHeight: '280px',
-        }"
+        id="main-content"
       >
         <Nuxt />
       </a-layout-content>
@@ -111,9 +106,15 @@ body {
   box-sizing: border-box;
   margin: 0;
 }
+
+#main-content {
+  margin: 24px 16px;
+  padding: 24px 24px;
+  background: #fff;
+  min-height: 280px;
+  overflow-y: scroll;
+}
 </style>
-
-
 
 
 
