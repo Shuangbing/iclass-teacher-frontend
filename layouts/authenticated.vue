@@ -4,20 +4,16 @@
     <a-layout-sider v-model="collapsed" :trigger="null" collapsible>
       <div class="logo" />
       <a-menu theme="dark" mode="inline" :default-selected-keys="['1']">
-        <a-menu-item key="1">
-          <a-icon type="user" />
+        <a-menu-item key="1" @click="$router.push('/subject')">
+          <a-icon type="copy" />
           <span>サブジェクト</span>
         </a-menu-item>
-        <a-menu-item key="2">
-          <a-icon type="video-camera" />
-          <span>グループ</span>
-        </a-menu-item>
-        <a-menu-item key="3">
-          <a-icon type="upload" />
+        <a-menu-item key="2" @click="$router.push('/account')">
+          <a-icon type="user" />
           <span>アカウント情報</span>
         </a-menu-item>
-        <a-menu-item key="4" @click="logoutLogic">
-          <a-icon type="user" />
+        <a-menu-item key="3" @click="logoutLogic">
+          <a-icon type="logout" />
           <span>ログアウト</span>
         </a-menu-item>
       </a-menu>

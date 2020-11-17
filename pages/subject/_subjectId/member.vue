@@ -16,6 +16,7 @@
             id="list-waitting-members"
             item-layout="horizontal"
             :data-source="waittingMember"
+            :locale="locale"
           >
             <a-list-item slot="renderItem" slot-scope="item">
               <a-list-item-meta :description="item.memberCode">
@@ -73,6 +74,9 @@ export default {
       waittingInterval: null,
       subjectId: null,
       amount: 2,
+      locale: {
+        emptyText: "メンバーがいません",
+      },
     };
   },
   mounted() {

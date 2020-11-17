@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-page-header title="サブジェクト" sub-title="サブジェクトの管理" Ï>
+    <a-page-header title="サブジェクト">
       <template slot="extra">
         <a-button key="1" type="primary" @click="showNewSubject">
           新規作成
@@ -30,16 +30,25 @@
       </a-form-model>
     </a-modal>
 
-    <a-table :columns="columns" :data-source="subjectData" rowKey="title">
+    <a-table
+      :columns="columns"
+      :data-source="subjectData"
+      rowKey="title"
+      :locale="locale"
+    >
       <a slot="name" slot-scope="text">{{ text }}</a>
       <span slot="action" slot-scope="text, record">
         <a @click="generateShareLink(record)">招待リンク</a>
         <a-divider type="vertical" />
         <a @click="$nuxt.$router.push(`/subject/${record.code}/member`)"
+          >メンバー</a
+        >
+        <a-divider type="vertical" />
+        <a @click="$nuxt.$router.push(`/subject/${record.code}/group`)"
           >グループ</a
         >
         <a-divider type="vertical" />
-        <a>削除</a>
+        <a @click="deleteSubject(record.code)">削除</a>
       </span>
     </a-table>
   </div>
@@ -75,6 +84,9 @@ export default {
         title: "",
         description: "",
       },
+      locale: {
+        emptyText: "サブジェクトがありません",
+      },
     };
   },
   async asyncData({ $axios }) {
@@ -102,6 +114,23 @@ export default {
         this.form.title = "";
         this.form.description = "";
         this.subjectData.push(result.data);
+      });
+    },
+    async deleteSubject(subjectCode) {
+      this.$confirm({
+        title: "このサブジェクト削除しますか?",
+        content:
+          "このサブジェクトのグループ、メンバー、共有ファイルが全て削除されます。",
+        okText: "はい",
+        okType: "danger",
+        cancelText: "いいえ",
+        onOk: () => {
+          this.$axios.delete(`/subject/${subjectCode}`).then(() => {
+            this.subjectData = this.subjectData.filter(
+              (subject) => subject.code != subjectCode
+            );
+          });
+        },
       });
     },
   },
