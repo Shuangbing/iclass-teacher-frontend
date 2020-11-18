@@ -1,9 +1,9 @@
 
 <template>
   <a-layout id="auth-view">
-    <a-layout-sider v-model="collapsed" :trigger="null" collapsible>
-      <div class="logo" />
-      <a-menu theme="dark" mode="inline" :default-selected-keys="['1']">
+    <a-layout-sider style="background: #fff; padding: 0">
+      <img src="@/assets/logo.png" class="header-logo" alt="logo" />
+      <a-menu theme="light" mode="inline" :default-selected-keys="['1']">
         <a-menu-item key="1" @click="$router.push('/subject')">
           <a-icon type="copy" />
           <span>サブジェクト</span>
@@ -19,14 +19,6 @@
       </a-menu>
     </a-layout-sider>
     <a-layout>
-      <a-layout-header style="background: #fff; padding: 0">
-        <a-icon
-          class="trigger"
-          :type="collapsed ? 'menu-unfold' : 'menu-fold'"
-          @click="() => (collapsed = !collapsed)"
-        />
-      </a-layout-header>
-
       <a-layout-content
         v-if="$cookies.get('teacherAccessToken')"
         id="main-content"
@@ -39,11 +31,6 @@
 
 <script>
 export default {
-  data() {
-    return {
-      collapsed: false,
-    };
-  },
   beforeCreate() {
     if (!this.$cookies.get("teacherAccessToken")) {
       this.$router.push("/auth/login");
@@ -52,8 +39,16 @@ export default {
   },
   methods: {
     logoutLogic() {
-      this.$cookies.set("teacherAccessToken", null);
-      this.$router.push("/auth/login");
+      this.$confirm({
+        title: "ログアウトしてよろしいでしょうか?",
+        content: "ログイン情報がパソコンから削除されます。",
+        okText: "はい",
+        cancelText: "いいえ",
+        onOk: () => {
+          this.$cookies.set("teacherAccessToken", null);
+          this.$router.push("/auth/login");
+        },
+      });
     },
   },
 };
@@ -63,9 +58,9 @@ export default {
 #auth-view {
   height: 100vh;
 }
-#auth-view .logo {
+.header-logo {
   height: 32px;
-  margin: 16px;
+  margin: 16px 32px;
 }
 #auth-view .trigger {
   font-size: 18px;
