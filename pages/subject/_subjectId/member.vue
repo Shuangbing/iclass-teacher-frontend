@@ -8,9 +8,7 @@
     </a-page-header>
     <a-row type="flex" justify="space-around">
       <a-col :span="12">
-        <div id="spin-waitting">
-          <a-spin />
-        </div>
+        <a-progress :percent="percent" status="active" :showInfo="false" />
         <div>
           <a-list
             id="list-waitting-members"
@@ -74,6 +72,7 @@ export default {
       waittingInterval: null,
       subjectId: null,
       amount: 2,
+      percent: 0,
       locale: {
         emptyText: "メンバーがいません",
       },
@@ -83,14 +82,17 @@ export default {
     this.subjectId = this.$nuxt.$route.params.subjectId;
     this.refreshWaittingMember();
     this.waittingInterval = setInterval(async () => {
-      await this.refreshWaittingMember();
-    }, 5000);
+      this.percent >= 100
+        ? await this.refreshWaittingMember()
+        : (this.percent += 20);
+    }, 1000);
   },
   beforeDestroy() {
     clearInterval(this.waittingInterval);
   },
   methods: {
     async refreshWaittingMember() {
+      this.percent = 0;
       const members = await this.$nuxt.$axios
         .get(`/subject/${this.subjectId}/member/waitting`)
         .then(async (result) => {
