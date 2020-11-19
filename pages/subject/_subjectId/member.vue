@@ -1,8 +1,8 @@
 <template>
   <div>
     <a-page-header
-      title="参加メンバー"
-      sub-title="サブジェクトのメンバー"
+      title="グルーピング"
+      sub-title="参加メンバ一覧"
       @back="$router.go(-1)"
     >
     </a-page-header>
@@ -31,6 +31,12 @@
       </a-col>
       <a-col :span="10">
         <a-form-model>
+          <a-form-model-item label="サブジェクト">
+            <a-page-header
+              :title="subject.title"
+              :sub-title="subject.description"
+            />
+          </a-form-model-item>
           <a-form-model-item>
             <a-statistic
               title="グルーピング待ち人数"
@@ -71,6 +77,7 @@ export default {
       waittingMember: [],
       waittingInterval: null,
       subjectId: null,
+      subject: {},
       amount: 2,
       percent: 0,
       locale: {
@@ -93,10 +100,11 @@ export default {
   methods: {
     async refreshWaittingMember() {
       this.percent = 0;
-      const members = await this.$nuxt.$axios
+      await this.$nuxt.$axios
         .get(`/subject/${this.subjectId}/member/waitting`)
         .then(async (result) => {
-          this.waittingMember = result.data;
+          this.subject = result.data;
+          this.waittingMember = this.subject.members;
         });
     },
     getGroupCount() {

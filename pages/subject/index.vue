@@ -9,12 +9,12 @@
     </a-page-header>
 
     <a-modal
-      title="新規作成"
+      :title="editMode ? '編集' : '新規作成'"
       :visible="visible"
       :confirm-loading="confirmLoading"
-      @ok="createSubject"
+      @ok="editMode ? editSubject() : createSubject()"
       @cancel="visible = false"
-      okText="作成"
+      :okText="editMode ? '編集' : '作成'"
       cancelText="閉じる"
     >
       <a-form-model :layout="form.layout" :model="form">
@@ -36,7 +36,6 @@
       rowKey="title"
       :locale="locale"
     >
-      <a slot="name" slot-scope="text">{{ text }}</a>
       <span slot="action" slot-scope="text, record">
         <a @click="generateShareLink(record)">招待リンク</a>
         <a-divider type="vertical" />
@@ -47,6 +46,8 @@
         <a @click="$nuxt.$router.push(`/subject/${record.code}/group`)"
           >グループ</a
         >
+        <a-divider type="vertical" />
+        <a @click="showEditSubject(record.code)">編集</a>
         <a-divider type="vertical" />
         <a @click="deleteSubject(record.code)">削除</a>
       </span>
@@ -64,6 +65,11 @@ const columns = [
     title: "コード",
     dataIndex: "code",
     key: "code",
+  },
+  {
+    title: "作成時間",
+    dataIndex: "createdAt",
+    key: "createdAt",
   },
   {
     title: "操作",
@@ -84,6 +90,8 @@ export default {
         title: "",
         description: "",
       },
+      editMode: false,
+      editSubjectCode: null,
       locale: {
         emptyText: "サブジェクトがありません",
       },
@@ -102,7 +110,20 @@ export default {
       });
     },
     showNewSubject() {
+      this.editMode = false;
       this.visible = true;
+      this.form.title = "";
+      this.form.description = "";
+    },
+    showEditSubject(subjectCode) {
+      this.editMode = true;
+      this.visible = true;
+      this.editSubjectCode = subjectCode;
+      const editSubjectData = this.subjectData.find(
+        (subject) => subject.code == subjectCode
+      );
+      this.form.title = editSubjectData.title;
+      this.form.description = editSubjectData.description;
     },
     async createSubject() {
       const createSubjectData = {
@@ -115,6 +136,25 @@ export default {
         this.form.description = "";
         this.subjectData.push(result.data);
       });
+    },
+    async editSubject() {
+      await this.$axios
+        .put(`/subject/${this.editSubjectCode}`, {
+          title: this.form.title,
+          description: this.form.description,
+        })
+        .then(() => {
+          this.subjectData.map((subject) => {
+            if (subject.code == this.editSubjectCode) {
+              subject.title = this.form.title;
+              subject.description = this.form.description;
+              return subject;
+            }
+          });
+          this.visible = false;
+          this.form.title = "";
+          this.form.description = "";
+        });
     },
     async deleteSubject(subjectCode) {
       this.$confirm({

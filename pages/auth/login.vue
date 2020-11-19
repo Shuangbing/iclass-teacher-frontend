@@ -18,7 +18,7 @@
       </a-input>
       <a-space>
         <a-button type="primary" @click="loginLogic">ログイン</a-button>
-        <a-button>新規登録</a-button>
+        <a-button @click="$router.push('/auth/signup')">新規登録</a-button>
       </a-space>
     </a-card>
   </div>
