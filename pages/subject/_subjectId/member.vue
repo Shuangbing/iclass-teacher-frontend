@@ -54,9 +54,10 @@
             <p>{{ amount }}人に１グループを編成します。</p>
             <p>
               合計{{
-                waittingMember.length % amount == 0
-                  ? waittingMember.length / amount
+                waittingMember.length % amount &lt;= 1
+                  ? parseInt(waittingMember.length / amount)
                   : parseInt(waittingMember.length / amount) + 1
+
               }}グループが作成されます。
             </p>
           </a-form-model-item>
