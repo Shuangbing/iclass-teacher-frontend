@@ -23,7 +23,16 @@
                   style="backgroundcolor: #87d068"
                   icon="user"
                 />
-                <a slot="title">{{ item.name }}</a>
+                <a slot="title">
+                  <a-checkbox
+                    :name="`${item.memberCode}`"
+                    :disabled="!!item.group"
+                    @change="createGroup"
+                  >
+                    {{ item.name }}
+                  </a-checkbox>
+                  <a-tag color="red" v-if="!!item.group"> 編成済 </a-tag>
+                </a>
               </a-list-item-meta>
             </a-list-item>
           </a-list>
@@ -39,8 +48,19 @@
           </a-form-model-item>
           <a-form-model-item>
             <a-statistic
-              title="グルーピング待ち人数"
+              title="参加人数"
               :value="waittingMember.length"
+              style="margin-right: 50px"
+            >
+              <template #suffix>
+                <a-icon type="user" />
+              </template>
+            </a-statistic>
+          </a-form-model-item>
+          <a-form-model-item>
+            <a-statistic
+              title="グルーピング待ち人数"
+              :value="waittingMemberWithoutGrouped.length"
               style="margin-right: 50px"
             >
               <template #suffix>
@@ -53,16 +73,25 @@
             <a-slider v-model="amount" :min="2" :max="9" />
             <p>{{ amount }}人に１グループを編成します。</p>
             <p>
-              合計{{
-                waittingMember.length % amount &lt;= 1
-                  ? parseInt(waittingMember.length / amount)
-                  : parseInt(waittingMember.length / amount) + 1
+              合計{{waittingMemberWithoutGrouped.length % amount &lt;= 1
+                  ? parseInt(waittingMemberWithoutGrouped.length / amount)
+                  : parseInt(waittingMemberWithoutGrouped.length / amount) + 1
+
+
 
               }}グループが作成されます。
             </p>
           </a-form-model-item>
           <a-form-model-item>
             <a-button type="primary" @click="grouping"> グルーピング </a-button>
+          </a-form-model-item>
+          <a-form-model-item>
+            <a-button
+              @click="customGrouping"
+              :disabled="createGroupMembers.length < 2"
+            >
+              選択したメンバーでグルーピング
+            </a-button>
           </a-form-model-item>
         </a-form-model>
       </a-col>
@@ -76,11 +105,13 @@ export default {
   data() {
     return {
       waittingMember: [],
+      waittingMemberWithoutGrouped: [],
       waittingInterval: null,
       subjectId: null,
       subject: {},
       amount: 2,
       percent: 0,
+      createGroupMembers: [],
       locale: {
         emptyText: "メンバーがいません",
       },
@@ -106,6 +137,9 @@ export default {
         .then(async (result) => {
           this.subject = result.data;
           this.waittingMember = this.subject.members;
+          this.waittingMemberWithoutGrouped = this.waittingMember.filter(
+            (member) => !member.group
+          );
         });
     },
     getGroupCount() {
@@ -115,11 +149,28 @@ export default {
         return Number(this.waittingMember / this.amount) + 1;
       }
     },
+    createGroup(e) {
+      if (e.target.checked) {
+        this.createGroupMembers.push(e.target.name);
+      } else {
+        this.createGroupMembers = this.createGroupMembers.filter(
+          (item) => item != e.target.name
+        );
+      }
+    },
     async grouping() {
       await this.$nuxt.$axios
         .post(`/subject/${this.subjectId}/group`, { amount: this.amount })
         .then(async (result) => {
-          console.log(result);
+          this.$nuxt.$router.push(`/subject/${this.subjectId}/group`);
+        });
+    },
+    async customGrouping() {
+      await this.$nuxt.$axios
+        .post(`/subject/${this.subjectId}/group/custom`, {
+          members: this.createGroupMembers,
+        })
+        .then(async (result) => {
           this.$nuxt.$router.push(`/subject/${this.subjectId}/group`);
         });
     },

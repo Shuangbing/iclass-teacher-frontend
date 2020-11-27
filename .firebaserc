@@ -1,5 +1,17 @@
 {
   "projects": {
     "default": "iclass-teacher-firebase"
+  },
+  "targets": {
+    "iclass-teacher-firebase": {
+      "hosting": {
+        "prod": [
+          "iclass-teacher-prod"
+        ],
+        "develop": [
+          "iclass-teacher-firebase"
+        ]
+      }
+    }
   }
 }
