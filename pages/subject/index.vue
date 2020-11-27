@@ -105,7 +105,7 @@ export default {
     generateShareLink(record) {
       this.$success({
         title: "招待リンク",
-        content: `https://dev--i.iclass.buzz/subject/${record.code}?p=${record.password}`,
+        content: `https://i.iclass.buzz/subject/${record.code}?p=${record.password}`,
         onOk() {},
       });
     },
